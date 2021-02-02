@@ -3,6 +3,8 @@ import axios from 'axios';
 import SatSetting from './SatSetting';
 import SatelliteList from './SatelliteList';
 import {NEARBY_SATELLITE, SAT_API_KEY, STARLINK_CATEGORY} from "../constants";
+import WorldMap from './WorldMap';
+
 
 class Main extends Component {
     constructor(){
@@ -22,16 +24,20 @@ class Main extends Component {
     }
 
     fetchSatellite= (setting) => {
+        //fetch data from server
+        //step1:get the setting
         const {latitude, longitude, elevation, altitude} = setting;
+        //step2:config
         const url = `/api/${NEARBY_SATELLITE}/${latitude}/${longitude}/${elevation}/${altitude}/${STARLINK_CATEGORY}/&apiKey=${SAT_API_KEY}`;
-
+        //show spin
         this.setState({
             isLoadingList: true
         });
-
+        //step3:send req
         axios.get(url)
             .then(response => {
                 console.log(response.data)
+                //when fetching data succeed, hide spin and update satinfo
                 this.setState({
                     satInfo: response.data,
                     isLoadingList: false
@@ -39,6 +45,10 @@ class Main extends Component {
             })
             .catch(error => {
                 console.log('err in fetch satellite -> ', error);
+                //when fetching data failed, hide spin
+                this.setState({
+                    isLoadingList:false
+                })
             })
     }
 
@@ -53,7 +63,7 @@ class Main extends Component {
                     />
                 </div>
                 <div className="right-side">
-                    right
+                    <WorldMap />
                 </div>
             </div>
         );
