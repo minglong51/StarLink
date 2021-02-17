@@ -12,16 +12,44 @@ class Main extends Component {
         this.state = {
             satInfo: null,
             settings: null,
-            isLoadingList: false
+            isLoadingList: false,
+            satList:null
         };
+    }
+
+    render() {
+        const { isLoadingList, satInfo, satList, setting } = this.state;
+        return (
+            <div className="main">
+                <div className="left-side">
+                    <SatSetting onShow={this.showNearbySatellite}/>
+                    <SatelliteList isLoad={isLoadingList}
+                                   satInfo={satInfo}
+                                   onShowMap={this.showMap} />
+                </div>
+                <div className="right-side">
+                    <WorldMap satData={satList} observerData={setting} />
+                </div>
+            </div>
+        );
+    }
+
+    //set state update world map
+    showMap = (selected) => {
+        this.setState(preState => ({
+            ...preState,
+            satList: [...selected]
+        }))
     }
 
     showNearbySatellite = (setting) => {
         this.setState({
-            settings: setting
+            isLoadingList: true,
+            setting: setting
         })
         this.fetchSatellite(setting);
     }
+
 
     fetchSatellite= (setting) => {
         //fetch data from server
@@ -52,22 +80,6 @@ class Main extends Component {
             })
     }
 
-    render() {
-        const { satInfo } = this.state;
-        return (
-            <div className='main'>
-                <div className="left-side">
-                    <SatSetting onShow={this.showNearbySatellite}/>
-                    <SatelliteList satInfo={satInfo}
-                                   isLoad={this.state.isLoadingList}
-                    />
-                </div>
-                <div className="right-side">
-                    <WorldMap />
-                </div>
-            </div>
-        );
-    }
 }
 
 export default Main;
